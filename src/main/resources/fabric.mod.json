@@ -2,45 +2,30 @@
 	"schemaVersion": 1,
 	"id": "lavasurvival",
 	"version": "${version}",
-	"name": "LavaSurvival",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Lava Survival",
+	"description": "The minigame popular in Minecraft Classic remade in Modern Minecraft using Plasmid!",
 	"authors": [
-		"Me!"
+		"PoeticRainbow"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/PoeticRainbow/lava-survival"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/lavasurvival/icon.png",
+	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"poeticrainbow.lavasurvival.LavaSurvival"
 		],
-		"client": [
-			"poeticrainbow.lavasurvival.LavaSurvivalClient"
-		],
 		"fabric-datagen": [
 			"poeticrainbow.lavasurvival.LavaSurvivalDataGenerator"
 		]
 	},
-	"mixins": [
-		"lavasurvival.mixins.json",
-		{
-			"config": "lavasurvival.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"accessWidener": "lavasurvival.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "~1.20.4",
 		"java": ">=17",
 		"fabric-api": "*",
-    "plasmid": ">=0.5.0"
-	},
-	"suggests": {
-		"another-mod": "*"
+    	"plasmid": ">=0.5.0"
 	}
 }
