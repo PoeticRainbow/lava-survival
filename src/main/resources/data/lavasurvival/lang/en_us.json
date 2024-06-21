@@ -1,0 +1,40 @@
+{
+  "bossbar.lavasurvival.starting_soon": "Starting soon...",
+  "bossbar.lavasurvival.grace_period": "The flood is coming in %s seconds... start preparing!",
+  "bossbar.lavasurvival.title": "Don't get burned! %s seconds left",
+
+  "death.lavasurvival.lava": "%s lost their life to the lava.",
+  "death.lavasurvival.other": "%s didn't even die to the lava...",
+
+  "game.lavasurvival.desc": "The classic Minecraft gamemode brought to Modern Minecraft. Survive the infinite flood of Lava!",
+  "game.lavasurvival.armageddon": "Lava Survival: Armageddon",
+  "game.lavasurvival.armageddon.desc": "The Lava... it's coming from everywhere!",
+  "game.lavasurvival.long": "Lava Survival: Long Overworld",
+  "game.lavasurvival.long.desc": "It's kind of like an ant farm.",
+  "game.lavasurvival.micro": "Lava Survival: Micro Overworld",
+  "game.lavasurvival.micro.desc": "Cozy up to your neighbors!",
+  "game.lavasurvival.normal": "Lava Survival: Overworld",
+  "game.lavasurvival.normal.desc": "The most normal of the bunch...",
+  "game.lavasurvival.the_nether": "Lava Survival: The Nether",
+  "game.lavasurvival.the_nether_armageddon": "Lava Survival: Nethergeddon",
+  "game.lavasurvival.the_nether_armageddon.desc": "Also known as Armanether!",
+  "game.lavasurvival.the_nether.desc": "We need to go deeper!",
+  "game.lavasurvival.the_nether_long": "Lava Survival: The Long Nether",
+  "game.lavasurvival.the_nether_long.desc": "The Nether, but long! Could've guessed that.",
+  "game.lavasurvival.the_nether_micro": "Lava Survival: The Micro Nether",
+  "game.lavasurvival.the_nether_micro.desc": "Itty bitty little Nether! Aww...",
+  "gameType.lavasurvival.lavasurvival": "Lava Survival",
+
+  "gui.blockmenu.title": "Select block",
+  "item.lavasurvival.block_menu": "Block Menu",
+
+  "message.lavasurvival.countdown": "Starting in %s seconds...",
+  "message.lavasurvival.prefix": "Lava Survival > ",
+  "message.lavasurvival.spectate": "Hey! You're a spectator because you joined a game in progress! Try and catch the next one!",
+  "message.lavasurvival.win": "Congratulations to all the survivors!",
+  "message.lavasurvival.lose": "Seems like the lava won this one...",
+  "message.lavasurvival.grace_period_end": "Let the flood begin!",
+
+  "sidebar.lavasurvival.placement": "%s: %s points",
+  "sidebar.lavasurvival.players_left": "%s player(s) remain."
+}

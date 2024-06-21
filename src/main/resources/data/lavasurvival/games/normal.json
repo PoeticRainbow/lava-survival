@@ -1,0 +1,18 @@
+{
+  "type": "lavasurvival:lavasurvival",
+  "icon": "minecraft:lava_bucket",
+  "description": { "translate": "game.lavasurvival.normal.desc"},
+  "grace_period": 30,
+  "time_limit": 240,
+  "x_size_chunks": 4,
+  "z_size_chunks": 4,
+  "armageddon": false,
+  "dimension_options": "minecraft:overworld",
+  "preset": "minecraft:normal",
+  "excluded_biomes": "#lavasurvival:is_water_dominant",
+  "players": {
+    "min": 2,
+    "max": 64,
+    "threshold": 2
+  }
+}
