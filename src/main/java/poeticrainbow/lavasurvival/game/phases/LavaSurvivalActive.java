@@ -196,7 +196,7 @@ public class LavaSurvivalActive {
     }
 
     private ActionResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
-        if (entity instanceof ServerPlayerEntity hitPlayer) {
+        if (!attacker.isSpectator() && entity instanceof ServerPlayerEntity hitPlayer) {
             hitPlayer.damage(world.getDamageSources().playerAttack(attacker), 0.1f);
             return ActionResult.SUCCESS;
         }
@@ -228,7 +228,7 @@ public class LavaSurvivalActive {
             scoreChange = 5;
         }
 
-        player.sendMessage(Text.literal("+" + scoreChange), true);
+//        player.sendMessage(Text.literal("+" + scoreChange), true);
         changeScore(player, scoreChange);
     }
 
