@@ -83,7 +83,11 @@ public class BlockGui extends SimpleGui {
 
     @Override
     public boolean onClick(int index, ClickType type, SlotActionType action, GuiElementInterface element) {
+        if (element == null) {
+            return false;
+        }
         var itemstack = element.getItemStack();
+
         itemstack.setCount(64);
         var player = getPlayer();
         player.giveItemStack(itemstack);
