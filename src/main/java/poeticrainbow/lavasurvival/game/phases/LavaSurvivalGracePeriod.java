@@ -1,6 +1,7 @@
 package poeticrainbow.lavasurvival.game.phases;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.explosion.Explosion;
 import poeticrainbow.lavasurvival.LavaSurvival;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
@@ -29,6 +31,7 @@ import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
+import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.ArrayList;
 
@@ -67,8 +70,7 @@ public class LavaSurvivalGracePeriod {
             activity.listen(PlayerAttackEntityEvent.EVENT, phase::onPlayerAttack);
             activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
             activity.listen(GameActivityEvents.TICK, phase::onTick);
-
-            activity.allow(GameRuleType.UNSTABLE_TNT);
+            activity.listen(ExplosionDetonatedEvent.EVENT, phase::onTntExplosion);
 
             activity.deny(GameRuleType.SATURATED_REGENERATION);
             activity.deny(GameRuleType.HUNGER);
@@ -147,6 +149,21 @@ public class LavaSurvivalGracePeriod {
             return ActionResult.FAIL;
         }
         return ActionResult.SUCCESS;
+    }
+
+    private void onTntExplosion(Explosion explosion, boolean b) {
+        var entity = explosion.getEntity();
+        if (entity instanceof TntEntity) {
+            var blocks = explosion.getAffectedBlocks();
+            var world = entity.getWorld();
+
+            for (int i = blocks.size() - 1; i >= 0; i--) {
+                var blockState = world.getBlockState(blocks.get(i));
+                if (!blockState.isOf(LavaSurvival.INFINITE_LAVA) && !blockState.isOf(LavaSurvival.INFINITE_LAVA_STILL)) {
+                    blocks.remove(i);
+                }
+            }
+        }
     }
 
     public int getTimeLeft() {

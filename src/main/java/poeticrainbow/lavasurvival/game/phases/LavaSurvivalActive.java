@@ -2,6 +2,7 @@ package poeticrainbow.lavasurvival.game.phases;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.Items;
@@ -16,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.explosion.Explosion;
 import poeticrainbow.lavasurvival.LavaSurvival;
 import poeticrainbow.lavasurvival.LavaSurvivalDataGenerator;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
@@ -32,6 +34,7 @@ import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
+import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,10 +79,9 @@ public class LavaSurvivalActive {
             activity.listen(PlayerDamageEvent.EVENT, phase::onPlayerDamage);
             activity.listen(GameActivityEvents.TICK, phase::onTick);
             activity.listen(GameActivityEvents.DESTROY, phase::onGameClose);
+            activity.listen(ExplosionDetonatedEvent.EVENT, phase::onTntExplosion);
 
             activity.listen(BlockPlaceEvent.AFTER, phase::onBlockPlace);
-
-            activity.allow(GameRuleType.UNSTABLE_TNT);
 
             activity.deny(GameRuleType.SATURATED_REGENERATION);
             activity.deny(GameRuleType.HUNGER);
@@ -227,9 +229,23 @@ public class LavaSurvivalActive {
         } else if (blockState.isIn(LavaSurvivalDataGenerator.ModBlockTagGenerator.FIVE_POINT_BLOCKS)) {
             scoreChange = 5;
         }
-
 //        player.sendMessage(Text.literal("+" + scoreChange), true);
         changeScore(player, scoreChange);
+    }
+
+    private void onTntExplosion(Explosion explosion, boolean b) {
+        var entity = explosion.getEntity();
+        if (entity instanceof TntEntity) {
+            var blocks = explosion.getAffectedBlocks();
+            var world = entity.getWorld();
+
+            for (int i = blocks.size() - 1; i >= 0; i--) {
+                var blockState = world.getBlockState(blocks.get(i));
+                if (!blockState.isOf(LavaSurvival.INFINITE_LAVA) && !blockState.isOf(LavaSurvival.INFINITE_LAVA_STILL)) {
+                    blocks.remove(i);
+                }
+            }
+        }
     }
 
     private void changeScore(ServerPlayerEntity player, Integer integer) {
