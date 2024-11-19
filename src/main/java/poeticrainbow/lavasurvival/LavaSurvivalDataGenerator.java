@@ -16,9 +16,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class LavaSurvivalDataGenerator implements DataGeneratorEntrypoint {
 	public static class ModBlockTagGenerator extends FabricTagProvider.BlockTagProvider {
-		public static final TagKey<Block> ONE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, new Identifier("lavasurvival:one_point_blocks"));
-		public static final TagKey<Block> THREE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, new Identifier("lavasurvival:three_point_blocks"));
-		public static final TagKey<Block> FIVE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, new Identifier("lavasurvival:five_point_blocks"));
+		public static final TagKey<Block> ONE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("lavasurvival:one_point_blocks"));
+		public static final TagKey<Block> THREE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("lavasurvival:three_point_blocks"));
+		public static final TagKey<Block> FIVE_POINT_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("lavasurvival:five_point_blocks"));
 
 		public ModBlockTagGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
 			super(output, completableFuture);

@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import poeticrainbow.lavasurvival.LavaSurvival;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
-import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
+import xyz.nucleoid.plasmid.api.game.GameSpaceManager;
 
 public class InfiniteLavaBlockEntity extends BlockEntity {
     private static int spreadTime;

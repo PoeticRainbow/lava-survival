@@ -8,6 +8,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import poeticrainbow.lavasurvival.LavaSurvival;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class BurningBlock extends Block implements PolymerBlock {
     public BurningBlock(Settings settings) {
@@ -21,7 +22,7 @@ public class BurningBlock extends Block implements PolymerBlock {
     }
 
     @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.MAGMA_BLOCK;
+    public BlockState getPolymerBlockState(BlockState blockState, PacketContext packetContext) {
+        return Blocks.MAGMA_BLOCK.getDefaultState();
     }
 }

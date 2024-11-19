@@ -11,7 +11,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
@@ -23,22 +22,21 @@ import poeticrainbow.lavasurvival.LavaSurvivalDataGenerator;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
 import poeticrainbow.lavasurvival.game.LavaSurvivalWidgets;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
-import xyz.nucleoid.plasmid.game.GameCloseReason;
-import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
-import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
-import xyz.nucleoid.plasmid.game.player.PlayerOffer;
-import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
-import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.plasmid.api.game.GameCloseReason;
+import xyz.nucleoid.plasmid.api.game.GameSpace;
+import xyz.nucleoid.plasmid.api.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.api.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.api.game.player.JoinOffer;
+import xyz.nucleoid.plasmid.api.game.player.JoinOfferResult;
+import xyz.nucleoid.plasmid.api.game.rule.GameRuleType;
+import xyz.nucleoid.stimuli.event.EventResult;
 import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class LavaSurvivalActive {
     private final LavaSurvivalConfig config;
@@ -56,7 +54,7 @@ public class LavaSurvivalActive {
         this.gameSpace = gameSpace;
         this.world = world;
 
-        center = new BlockPos((config.getX() * 16 / 2), 64, (config.getZ() * 16 / 2));
+        center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig().mapLength() * 16 / 2));
         timeElapsed = 0;
         widgets = new LavaSurvivalWidgets(this);
         alivePlayers = new ArrayList<ServerPlayerEntity>();
@@ -120,7 +118,7 @@ public class LavaSurvivalActive {
                 timeUntilEnd = 5;
             }
             // End the game if the time limit has been exceeded: win!
-            if (timeElapsed >= config.getTimeLimit() && timeUntilEnd == -1) {
+            if (timeElapsed >= config.timeLimit() && timeUntilEnd == -1) {
                 var players = gameSpace.getPlayers();
                 players.sendMessage(Text.literal(""));
                 players.sendMessage(Text.translatable("message.lavasurvival.win").formatted(Formatting.GOLD, Formatting.BOLD));
@@ -142,7 +140,7 @@ public class LavaSurvivalActive {
             widgets.updateWidgets(playerScores);
 
             // Armageddon mode >:)
-            if (config.getArmageddon() && currentTime % 100 == 0) {
+            if (config.armageddon() && currentTime % 100 == 0) {
                 spawnLava(world, config);
             }
 
@@ -150,7 +148,7 @@ public class LavaSurvivalActive {
         }
     }
 
-    private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource damageSource) {
+    private EventResult onPlayerDeath(ServerPlayerEntity player, DamageSource damageSource) {
         if (alivePlayers != null && alivePlayers.contains(player)) {
             alivePlayers.remove(player);
             playerScores.remove(player.getUuid());
@@ -161,19 +159,16 @@ public class LavaSurvivalActive {
         } else {
             gameSpace.getPlayers().sendMessage(prefix.append(Text.translatable("death.lavasurvival.other", player.getName()).formatted(Formatting.RED)));
         }
-        player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.PLAYERS, 0.7f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
+        player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, 0.7f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
         player.changeGameMode(GameMode.SPECTATOR);
-        return ActionResult.FAIL;
+        return EventResult.DENY;
     }
 
-    private PlayerOfferResult onPlayerOffer(PlayerOffer offer) {
-        ServerPlayerEntity player = offer.player();
-        var safeLocation = LavaSurvivalUtil.findSafeSpot(center, player.getServerWorld());
+    private JoinOfferResult onPlayerOffer(JoinOffer offer) {
+        //ServerPlayerEntity player = offer.;
+        //var safeLocation = LavaSurvivalUtil.findSafeSpot(center, player.getServerWorld());
 
-        return offer.accept(this.world, safeLocation)
-                .and(() -> {
-                    player.changeGameMode(GameMode.SPECTATOR);
-                });
+        return JoinOfferResult.ACCEPT;
     }
 
     private void onPlayerAdd(ServerPlayerEntity player) {
@@ -195,21 +190,23 @@ public class LavaSurvivalActive {
         widgets.removePlayer(player);
 
         widgets.updateWidgets(playerScores);
+
+        //player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.ofNullable(player.getUuid())));
     }
 
-    private ActionResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
+    private EventResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
         if (!attacker.isSpectator() && entity instanceof ServerPlayerEntity hitPlayer) {
-            hitPlayer.damage(world.getDamageSources().playerAttack(attacker), 0.1f);
-            return ActionResult.SUCCESS;
+            hitPlayer.damage(world, world.getDamageSources().playerAttack(attacker), 0.01f);
+            return EventResult.ALLOW;
         }
-        return ActionResult.SUCCESS;
+        return EventResult.DENY;
     }
 
-    private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource damageSource, float v) {
+    private EventResult onPlayerDamage(ServerPlayerEntity player, DamageSource damageSource, float v) {
         if (damageSource.getType() == world.getDamageSources().explosion(damageSource.getSource(), damageSource.getAttacker()).getType()) {
-            return ActionResult.FAIL;
+            return EventResult.DENY;
         }
-        return ActionResult.SUCCESS;
+        return EventResult.ALLOW;
     }
 
     private void onGameClose(GameCloseReason gameCloseReason) {
@@ -233,10 +230,9 @@ public class LavaSurvivalActive {
         changeScore(player, scoreChange);
     }
 
-    private void onTntExplosion(Explosion explosion, boolean b) {
+    private EventResult onTntExplosion(Explosion explosion, List<BlockPos> blocks) {
         var entity = explosion.getEntity();
         if (entity instanceof TntEntity) {
-            var blocks = explosion.getAffectedBlocks();
             var world = entity.getWorld();
 
             for (int i = blocks.size() - 1; i >= 0; i--) {
@@ -246,6 +242,7 @@ public class LavaSurvivalActive {
                 }
             }
         }
+        return EventResult.ALLOW;
     }
 
     private void changeScore(ServerPlayerEntity player, Integer integer) {
@@ -261,7 +258,7 @@ public class LavaSurvivalActive {
     }
 
     private static void spawnLava(ServerWorld world, LavaSurvivalConfig config) {
-        var location = LavaSurvivalUtil.getRandomBlockPos(config.getX(), config.getZ());
+        var location = LavaSurvivalUtil.getRandomBlockPos(config.mapConfig().mapWidth(), config.mapConfig().mapLength());
         var safeLavaLocation = LavaSurvivalUtil.getTopBlock(location, world);
 
         for (var i = 16; i >= 0; i--) {
@@ -276,11 +273,11 @@ public class LavaSurvivalActive {
     // Getters
     public long getTimeLeft() {
         // in seconds
-        return config.getTimeLimit() - timeElapsed;
+        return config.timeLimit() - timeElapsed;
     }
 
     public float getGameProgress() {
-        return (float) (config.getTimeLimit() - timeElapsed) / config.getTimeLimit();
+        return (float) (config.timeLimit() - timeElapsed) / config.timeLimit();
     }
 
     public GameSpace getGameSpace() {

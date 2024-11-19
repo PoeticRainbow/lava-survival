@@ -6,9 +6,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
+import org.jetbrains.annotations.Nullable;
 import poeticrainbow.lavasurvival.LavaSurvival;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class InfiniteLavaBlockStill extends Block implements PolymerBlock {
     public InfiniteLavaBlockStill(Settings settings) {
@@ -16,21 +20,21 @@ public class InfiniteLavaBlockStill extends Block implements PolymerBlock {
     }
 
     @Override
-    public Block getPolymerBlock(BlockState state) {
-        return Blocks.LAVA;
+    public BlockState getPolymerBlockState(BlockState blockState, PacketContext packetContext) {
+        return Blocks.LAVA.getDefaultState();
     }
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         super.onEntityCollision(state, world, pos, entity);
         if (entity instanceof ServerPlayerEntity player) {
-            player.damage(world.getDamageSources().lava(), 4.0f);
+            player.damage((ServerWorld) world, world.getDamageSources().lava(), 4.0f);
         }
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, null, notify);
         if (sourceBlock != LavaSurvival.INFINITE_LAVA && sourceBlock != LavaSurvival.INFINITE_LAVA_STILL) {
             world.setBlockState(pos, LavaSurvival.INFINITE_LAVA.getDefaultState());
         }

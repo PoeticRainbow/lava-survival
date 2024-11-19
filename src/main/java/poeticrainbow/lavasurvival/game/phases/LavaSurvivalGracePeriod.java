@@ -8,10 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
@@ -21,19 +19,21 @@ import net.minecraft.world.explosion.Explosion;
 import poeticrainbow.lavasurvival.LavaSurvival;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
-import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.common.widget.BossBarWidget;
-import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
-import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
-import xyz.nucleoid.plasmid.game.player.PlayerOffer;
-import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
-import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.plasmid.api.game.GameSpace;
+import xyz.nucleoid.plasmid.api.game.common.widget.BossBarWidget;
+import xyz.nucleoid.plasmid.api.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.api.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.api.game.player.JoinOffer;
+import xyz.nucleoid.plasmid.api.game.player.JoinOfferResult;
+import xyz.nucleoid.plasmid.api.game.rule.GameRuleType;
+import xyz.nucleoid.stimuli.event.EventResult;
 import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LavaSurvivalGracePeriod {
     private final LavaSurvivalConfig config;
@@ -43,19 +43,19 @@ public class LavaSurvivalGracePeriod {
     private static int gracePeriod;
     private static int timeElapsed;
     private static ArrayList<ServerPlayerEntity> alivePlayers;
-    private BossBarWidget bossbar;
+    private final BossBarWidget bossbar;
 
     public LavaSurvivalGracePeriod(LavaSurvivalConfig config, GameSpace gameSpace, ServerWorld world) {
         this.config = config;
         this.gameSpace = gameSpace;
         this.world = world;
 
-        center = new BlockPos((config.getX() * 16 / 2), 64, (config.getZ() * 16 / 2));
-        gracePeriod = config.getGracePeriod();
+        center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig().mapLength() * 16 / 2));
+        gracePeriod = config.gracePeriod();
         timeElapsed = 0;
         alivePlayers = new ArrayList<ServerPlayerEntity>();
 
-        this.bossbar = new BossBarWidget(Text.translatable("bossbar.lavasurvival.grace_period", config.getGracePeriod()));
+        this.bossbar = new BossBarWidget(Text.translatable("bossbar.lavasurvival.grace_period", config.gracePeriod()));
         this.bossbar.setStyle(BossBar.Color.RED, BossBar.Style.PROGRESS);
     }
 
@@ -94,7 +94,7 @@ public class LavaSurvivalGracePeriod {
         }
     }
 
-    private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource damageSource) {
+    private EventResult onPlayerDeath(ServerPlayerEntity player, DamageSource damageSource) {
         if (alivePlayers != null) {
             alivePlayers.remove(player);
         }
@@ -104,19 +104,16 @@ public class LavaSurvivalGracePeriod {
         } else {
             gameSpace.getPlayers().sendMessage(prefix.append(Text.translatable("death.lavasurvival.other", player.getName()).formatted(Formatting.RED)));
         }
-        player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.PLAYERS, 0.7f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
+        player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, 0.7f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
         player.changeGameMode(GameMode.SPECTATOR);
-        return ActionResult.FAIL;
+        return EventResult.DENY;
     }
 
-    private PlayerOfferResult onPlayerOffer(PlayerOffer offer) {
-        ServerPlayerEntity player = offer.player();
-        var safeLocation = LavaSurvivalUtil.findSafeSpot(center, player.getServerWorld());
+    private JoinOfferResult onPlayerOffer(JoinOffer offer) {
+        //ServerPlayerEntity player = offer.player();
+        //var safeLocation = LavaSurvivalUtil.findSafeSpot(center, player.getServerWorld());
 
-        return offer.accept(this.world, safeLocation)
-                .and(() -> {
-                    player.changeGameMode(GameMode.SPECTATOR);
-                });
+        return offer.accept();
     }
 
     private void onPlayerAdd(ServerPlayerEntity player) {
@@ -140,21 +137,20 @@ public class LavaSurvivalGracePeriod {
         bossbar.removePlayer(player);
     }
 
-    private ActionResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
-        return ActionResult.FAIL;
+    private EventResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
+        return EventResult.DENY;
     }
 
-    private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource damageSource, float v) {
+    private EventResult onPlayerDamage(ServerPlayerEntity player, DamageSource damageSource, float v) {
         if (damageSource.getType() == world.getDamageSources().explosion(damageSource.getSource(), damageSource.getAttacker()).getType()) {
-            return ActionResult.FAIL;
+            return EventResult.DENY;
         }
-        return ActionResult.SUCCESS;
+        return EventResult.ALLOW;
     }
 
-    private void onTntExplosion(Explosion explosion, boolean b) {
+    private EventResult onTntExplosion(Explosion explosion, List<BlockPos> blocks) {
         var entity = explosion.getEntity();
         if (entity instanceof TntEntity) {
-            var blocks = explosion.getAffectedBlocks();
             var world = entity.getWorld();
 
             for (int i = blocks.size() - 1; i >= 0; i--) {
@@ -164,6 +160,7 @@ public class LavaSurvivalGracePeriod {
                 }
             }
         }
+        return EventResult.ALLOW;
     }
 
     public int getTimeLeft() {

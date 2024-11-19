@@ -8,7 +8,6 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
@@ -92,7 +91,7 @@ public class BlockGui extends SimpleGui {
         var player = getPlayer();
         player.giveItemStack(itemstack);
 
-        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
+        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.5f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
 
         // Reset the item
         setSlot(index, items.get(index).getDefaultStack());

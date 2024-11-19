@@ -7,8 +7,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import poeticrainbow.lavasurvival.game.phases.LavaSurvivalActive;
-import xyz.nucleoid.plasmid.game.common.widget.BossBarWidget;
-import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
+import xyz.nucleoid.plasmid.api.game.common.widget.BossBarWidget;
+import xyz.nucleoid.plasmid.api.game.common.widget.SidebarWidget;
 
 import java.util.HashMap;
 import java.util.Map;
