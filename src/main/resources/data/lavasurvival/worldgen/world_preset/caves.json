@@ -1,0 +1,15 @@
+{
+  "dimensions": {
+    "minecraft:overworld": {
+      "type": "lavasurvival:overworld_caves_no_sky",
+      "generator": {
+        "type": "minecraft:noise",
+        "settings": "lavasurvival:short_caves",
+        "biome_source": {
+          "type": "minecraft:multi_noise",
+          "preset": "minecraft:overworld"
+        }
+      }
+    }
+  }
+}

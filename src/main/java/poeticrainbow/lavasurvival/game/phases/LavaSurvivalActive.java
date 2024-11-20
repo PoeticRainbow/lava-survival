@@ -108,7 +108,7 @@ public class LavaSurvivalActive {
                     gameSpace.close(GameCloseReason.FINISHED);
                 }
             }
-            // End the game if al the players are dead
+            // End the game if all the players are dead
             if (alivePlayers.isEmpty() && timeUntilEnd == -1) {
                 // End game
                 var players = gameSpace.getPlayers();
@@ -116,6 +116,7 @@ public class LavaSurvivalActive {
                 players.sendMessage(Text.translatable("message.lavasurvival.lose").formatted(Formatting.RED, Formatting.BOLD));
                 players.sendMessage(Text.literal(""));
                 timeUntilEnd = 5;
+                world.getTickManager().setFrozen(true);
             }
             // End the game if the time limit has been exceeded: win!
             if (timeElapsed >= config.timeLimit() && timeUntilEnd == -1) {

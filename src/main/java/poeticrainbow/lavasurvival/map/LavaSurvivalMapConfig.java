@@ -14,9 +14,11 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import poeticrainbow.lavasurvival.util.DimensionHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,10 @@ public record LavaSurvivalMapConfig(
     public DimensionOptions getDimensionOptions() {
         DimensionOptionsRegistryHolder registryHolder = this.worldPreset.value().createDimensionsRegistryHolder();
         return registryHolder.dimensions().get(this.dimensionOptions);
+    }
+
+    public RegistryEntry<DimensionType> getDimensionTypeFromWorldPreset() {
+        return ((DimensionHolder) this.worldPreset.value()).lava_survival$getDimension(dimensionOptions).get().dimensionTypeEntry();
     }
 
     private boolean isIncludedBiome(Pair<MultiNoiseUtil.NoiseHypercube, RegistryEntry<Biome>> pair) {
@@ -68,5 +74,19 @@ public record LavaSurvivalMapConfig(
             throw new IllegalArgumentException("Cannot exclude biomes from unsupported chunk generator");
         }
         return getDimensionOptions().chunkGenerator();
+    }
+
+    public DIMENSION_TYPE getDimensionType() {
+        return switch (getDimensionOptions().dimensionTypeEntry().getIdAsString()) {
+            case "minecraft:the_nether" -> DIMENSION_TYPE.THE_NETHER;
+            case "minecraft:the_end" -> DIMENSION_TYPE.THE_END;
+            default -> DIMENSION_TYPE.OVERWORLD;
+        };
+    }
+
+    public enum DIMENSION_TYPE {
+        OVERWORLD,
+        THE_NETHER,
+        THE_END
     }
 }

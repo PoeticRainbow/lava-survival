@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -37,13 +38,13 @@ public class BlockMenuItem extends Item implements PolymerItem {
         if (user instanceof ServerPlayerEntity player) {
             var gamespace = GameSpaceManager.get().byWorld(world);
             if (gamespace == null) {
-                user.playSound(SoundEvents.ENTITY_VILLAGER_NO, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
+                user.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_NO, SoundCategory.MASTER, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
                 return ActionResult.SUCCESS;
             }
 
             var blockMenu = new BlockGui(player);
             blockMenu.open();
-            user.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
+            user.playSoundToPlayer(SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.MASTER, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;

@@ -4,9 +4,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.dimension.DimensionOptions;
+import poeticrainbow.lavasurvival.LavaSurvival;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
 import poeticrainbow.lavasurvival.map.LavaSurvivalChunkGenerator;
+import poeticrainbow.lavasurvival.util.ActivityManager;
+import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.plasmid.api.game.GameOpenContext;
 import xyz.nucleoid.plasmid.api.game.GameOpenProcedure;
@@ -22,7 +24,9 @@ import xyz.nucleoid.plasmid.api.game.rule.GameRuleType;
 import xyz.nucleoid.stimuli.event.EventResult;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 
-public class LavaSurvivalWaitingPhase {
+import java.util.List;
+
+public class LavaSurvivalWaitingPhase implements ActivityManager {
     private final LavaSurvivalConfig config;
     private final GameSpace gameSpace;
     private final ServerWorld world;
@@ -38,26 +42,20 @@ public class LavaSurvivalWaitingPhase {
 
     public static GameOpenProcedure open(GameOpenContext<LavaSurvivalConfig> context) {
         LavaSurvivalConfig config = context.config();
-        DimensionOptions dimensionOptions = context.config().mapConfig().getDimensionOptions();
         RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
-                .setDimensionType(dimensionOptions.dimensionTypeEntry())
+                .setDimensionType(config.mapConfig().getDimensionTypeFromWorldPreset())
                 .setGenerator(new LavaSurvivalChunkGenerator(config.mapConfig(), context.server()))
                 .setSeed(Random.create().nextLong());
 
         return context.openWithWorld(worldConfig, (activity, world) -> {
             GameWaitingLobby.addTo(activity, config.lobbyConfig());
 
+            LavaSurvival.LOGGER.info("Ceiling: {}", world.getDimension().hasCeiling());
+
             LavaSurvivalWaitingPhase waiting = new LavaSurvivalWaitingPhase(config, activity.getGameSpace(), world);
 
-            activity.deny(GameRuleType.FALL_DAMAGE);
-            activity.deny(GameRuleType.HUNGER);
-            activity.deny(GameRuleType.PORTALS);
-            activity.deny(GameRuleType.PVP);
-            activity.deny(GameRuleType.BREAK_BLOCKS);
-            activity.deny(GameRuleType.INTERACTION);
-            activity.deny(GameRuleType.PICKUP_ITEMS);
-            activity.deny(GameRuleType.PLACE_BLOCKS);
-            activity.deny(GameRuleType.USE_ENTITIES);
+            waiting.setupAllowedActivities(activity);
+            waiting.setupDeniedActivities(activity);
 
             activity.listen(GamePlayerEvents.OFFER, JoinOffer::accept);
             activity.listen(GamePlayerEvents.ACCEPT, waiting::onAcceptPlayers);
@@ -67,7 +65,7 @@ public class LavaSurvivalWaitingPhase {
     }
 
     public JoinAcceptorResult onAcceptPlayers(JoinAcceptor joinAcceptor) {
-        return joinAcceptor.teleport(world, center.toCenterPos()).thenRunForEach(player -> player.changeGameMode(GameMode.ADVENTURE));
+        return joinAcceptor.teleport(world, LavaSurvivalUtil.findSafeSpot(center, world)).thenRunForEach(player -> player.changeGameMode(GameMode.ADVENTURE));
     }
 
     public GameResult onRequestStart() {
@@ -75,5 +73,19 @@ public class LavaSurvivalWaitingPhase {
 
         LavaSurvivalGracePeriod.open(this.gameSpace, this.world, this.config);
         return GameResult.ok();
+    }
+
+    @Override
+    public List<GameRuleType> getDeniedActivities() {
+        return List.of(GameRuleType.FALL_DAMAGE, GameRuleType.HUNGER,
+                GameRuleType.PORTALS, GameRuleType.PVP,
+                GameRuleType.BREAK_BLOCKS, GameRuleType.INTERACTION,
+                GameRuleType.PICKUP_ITEMS, GameRuleType.PLACE_BLOCKS,
+                GameRuleType.USE_ENTITIES, GameRuleType.CRAFTING);
+    }
+
+    @Override
+    public List<GameRuleType> getAllowedActivities() {
+        return List.of();
     }
 }

@@ -1,13 +1,13 @@
 {
   "type": "lavasurvival:lavasurvival",
   "icon": "minecraft:lava_bucket",
-  "description": { "translate": "game.lavasurvival.normal.desc"},
-  "grace_period": 30,
-  "time_limit": 240,
-  "armageddon": false,
+  "description": { "translate": "game.lavasurvival.armageddon.desc" },
+  "grace_period": 60,
+  "time_limit": 180,
+  "armageddon": true,
   "map": {
-    "map_width": 4,
-    "map_length": 4,
+    "map_width": 6,
+    "map_length": 6,
     "world_preset": "lavasurvival:normal",
     "dimension": "minecraft:overworld",
     "excluded_biomes": "#lavasurvival:is_water_dominant"

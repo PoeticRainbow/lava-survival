@@ -1,15 +1,15 @@
 {
   "type": "lavasurvival:lavasurvival",
   "icon": "minecraft:lava_bucket",
-  "description": { "translate": "game.lavasurvival.normal.desc"},
+  "description": { "translate": "game.lavasurvival.the_nether_long.desc"},
   "grace_period": 30,
-  "time_limit": 240,
+  "time_limit": 300,
   "armageddon": false,
   "map": {
-    "map_width": 4,
-    "map_length": 4,
+    "map_width": 1,
+    "map_length": 8,
     "world_preset": "lavasurvival:normal",
-    "dimension": "minecraft:overworld",
+    "dimension": "minecraft:the_nether",
     "excluded_biomes": "#lavasurvival:is_water_dominant"
   },
   "lobby": {

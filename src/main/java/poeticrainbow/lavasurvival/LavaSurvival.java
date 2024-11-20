@@ -31,17 +31,17 @@ public class LavaSurvival implements ModInitializer {
 
 	public static final RegistryKey<Block> INFINITE_LAVA_KEY = RegistryKey.of(RegistryKeys.BLOCK, id("infinite_lava"));
 	public static final Block INFINITE_LAVA = register(
-			new InfiniteLavaBlock(AbstractBlock.Settings.create().nonOpaque().solid().registryKey(INFINITE_LAVA_KEY)),
+			new InfiniteLavaBlock(AbstractBlock.Settings.create().nonOpaque().solid().luminance((state) -> 15).registryKey(INFINITE_LAVA_KEY)),
 			INFINITE_LAVA_KEY);
 
 	public static final RegistryKey<Block> INFINITE_LAVA_STILL_KEY = RegistryKey.of(RegistryKeys.BLOCK, id("infinite_lava_still"));
 	public static final Block INFINITE_LAVA_STILL = register(new InfiniteLavaBlockStill(
-			AbstractBlock.Settings.create().nonOpaque().solid().registryKey(INFINITE_LAVA_STILL_KEY)),
+			AbstractBlock.Settings.create().nonOpaque().solid().luminance((state) -> 15).registryKey(INFINITE_LAVA_STILL_KEY)),
 			INFINITE_LAVA_STILL_KEY);
 
 	public static final RegistryKey<Block> BURNING_BLOCK_KEY = RegistryKey.of(RegistryKeys.BLOCK, id("burning_block"));
 	public static final Block BURNING_BLOCK = register(
-			new BurningBlock(AbstractBlock.Settings.create().solid().ticksRandomly().registryKey(BURNING_BLOCK_KEY)),
+			new BurningBlock(AbstractBlock.Settings.create().solid().ticksRandomly().luminance((state) -> 15).registryKey(BURNING_BLOCK_KEY)),
 			BURNING_BLOCK_KEY);
 
 	public static final RegistryKey<Item> BLOCK_MENU_ITEM_KEY = RegistryKey.of(RegistryKeys.ITEM, id("block_menu"));

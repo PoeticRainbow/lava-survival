@@ -70,16 +70,16 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
                 for (int z = startZ; z < startZ + 16; z++) {
                     // Ensure there is no water worlds... scuffed
                     var preSurfaceBlock = Blocks.STONE.getDefaultState();
-                    String dimensionType = config.dimensionOptions().getValue().toString();
+                    LavaSurvivalMapConfig.DIMENSION_TYPE dimensionType = config.getDimensionType();
 
-                    if (dimensionType.equals("minecraft:the_nether")) {
+                    if (dimensionType == LavaSurvivalMapConfig.DIMENSION_TYPE.THE_NETHER) {
                         preSurfaceBlock = Blocks.NETHERRACK.getDefaultState();
                         var startY = 76;
                         for (int y = startY; y < startY + 6; y++) {
                             region.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 3);
                         }
                     }
-                    if (dimensionType.equals("minecraft:the_end")) {
+                    if (dimensionType == LavaSurvivalMapConfig.DIMENSION_TYPE.THE_END) {
                         preSurfaceBlock = Blocks.END_STONE.getDefaultState();
                     }
 
@@ -106,12 +106,14 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
             return;
         }
 
+        // Determine default liquid for dimension type
+        BlockState outerLiquid = Blocks.BARRIER.getDefaultState().with(WATERLOGGED, true);
+        if (config.getDimensionType() == LavaSurvivalMapConfig.DIMENSION_TYPE.THE_NETHER) {
+            outerLiquid = Blocks.LAVA.getDefaultState();
+        }
+
         // Directly a border chunk
         if (this.isChunkWithinBorderArea(chunk, 1)) {
-            BlockState outerLiquid = Blocks.BARRIER.getDefaultState().with(WATERLOGGED, true);
-            if (config.getDimensionOptions().dimensionTypeEntry().getType().toString().equals("minecraft:the_nether")) {
-                outerLiquid = Blocks.LAVA.getDefaultState();
-            }
             for (int x = startX; x < startX + 16; x++) {
                 for (int z = startZ; z < startZ + 16; z++) {
                     for (int y = 59; y < 320; y++) {
@@ -120,7 +122,13 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
                         } else if (y < 63) {
                             region.setBlockState(new BlockPos(x, y, z), outerLiquid, 3);
                         } else {
-                            region.setBlockState(new BlockPos(x, y, z), Blocks.BARRIER.getDefaultState(), 3);
+                            BlockState border = Blocks.BARRIER.getDefaultState();
+
+                            // If cave style
+                            if (!config.getDimensionTypeFromWorldPreset().value().hasSkyLight() && config.getDimensionTypeFromWorldPreset().value().hasCeiling()) {
+                                border = Blocks.BEDROCK.getDefaultState();
+                            }
+                            region.setBlockState(new BlockPos(x, y, z), border, 3);
                         }
                     }
                 }
@@ -130,10 +138,6 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
 
         // Classic outer water chunk
         if (this.isChunkWithinBorderArea(chunk, 16)) {
-            BlockState outerLiquid = Blocks.WATER.getDefaultState();
-            if (config.getDimensionOptions().dimensionTypeEntry().getType().toString().equals("minecraft:the_nether")) {
-                outerLiquid = Blocks.LAVA.getDefaultState();
-            }
             for (int x = startX; x < startX + 16; x++) {
                 for (int z = startZ; z < startZ + 16; z++) {
                     for (int y = 59; y < 63; y++) {
