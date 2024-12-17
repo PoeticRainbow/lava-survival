@@ -116,7 +116,6 @@ public class LavaSurvivalActive {
                 players.sendMessage(Text.translatable("message.lavasurvival.lose").formatted(Formatting.RED, Formatting.BOLD));
                 players.sendMessage(Text.literal(""));
                 timeUntilEnd = 5;
-                world.getTickManager().setFrozen(true);
             }
             // End the game if the time limit has been exceeded: win!
             if (timeElapsed >= config.timeLimit() && timeUntilEnd == -1) {
