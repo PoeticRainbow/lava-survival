@@ -38,15 +38,16 @@ public class LavaSurvivalWidgets {
         sidebar.addLines(Text.translatable("sidebar.lavasurvival.players_left", playerScores.size()));
         sidebar.addLines(Text.literal(""));
 
-        var server = game.getGameSpace().getServer();
-        for (Map.Entry<UUID, Integer> entry : playerScores.entrySet()) {
-            var uuid = entry.getKey();
-            var score = entry.getValue();
-
-            var player = server.getPlayerManager().getPlayer(uuid);
-
-//            sidebar.addLines(Text.translatable("sidebar.lavasurvival.placement", player.getName(), score).formatted(Formatting.RED));
-        }
+        // TODO implement scoring system
+        //var server = game.getGameSpace().getServer();
+        //for (Map.Entry<UUID, Integer> entry : playerScores.entrySet()) {
+        //    var uuid = entry.getKey();
+        //    var score = entry.getValue();
+        //
+        //    var player = server.getPlayerManager().getPlayer(uuid);
+        //
+        //    sidebar.addLines(Text.translatable("sidebar.lavasurvival.placement", player.getName(), score).formatted(Formatting.RED));
+        //}
 
         var style = Style.EMPTY.withColor(Colors.RED).withBold(true);
         if (game.getTimeLeft() > 0) {

@@ -1,13 +1,13 @@
 package poeticrainbow.lavasurvival.util;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -16,7 +16,7 @@ import poeticrainbow.lavasurvival.LavaSurvival;
 import java.util.Optional;
 
 public class LavaSurvivalUtil {
-    static Random random = Random.create();
+    static final Random random = Random.create();
 
     public static Vec3d findSafeSpot(BlockPos startPos, ServerWorld world) {
         var blockState = world.getBlockState(startPos);
@@ -58,7 +58,7 @@ public class LavaSurvivalUtil {
 
     public static ItemStack createUnbreakableTool(Item item) {
         var itemStack = item.getDefaultStack();
-        itemStack.set(DataComponentTypes.UNBREAKABLE, new UnbreakableComponent(true));
+        itemStack.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
         return itemStack;
     }
 

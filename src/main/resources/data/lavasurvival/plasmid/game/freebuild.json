@@ -1,0 +1,22 @@
+{
+  "type": "lavasurvival:lavasurvival",
+  "icon": "minecraft:lava_bucket",
+  "description": { "translate": "game.lavasurvival.freebuild.desc"},
+  "grace_period": 300,
+  "time_limit": 300,
+  "armageddon": false,
+  "map": {
+    "map_width": 8,
+    "map_length": 8,
+    "world_preset": "minecraft:flat",
+    "dimension": "minecraft:overworld"
+  },
+  "lobby": {
+    "min": 1,
+    "threshold": 8
+  },
+  "players": {
+    "max": 64,
+    "spectators": true
+  }
+}

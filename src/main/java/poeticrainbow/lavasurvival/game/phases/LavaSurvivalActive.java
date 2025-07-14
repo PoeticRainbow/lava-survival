@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,13 +37,15 @@ import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class LavaSurvivalActive {
     private final LavaSurvivalConfig config;
     private final GameSpace gameSpace;
     private final ServerWorld world;
-    private static BlockPos center;
     private static int timeElapsed;
     private static ArrayList<ServerPlayerEntity> alivePlayers;
     private static HashMap<UUID, Integer> playerScores;
@@ -54,11 +57,12 @@ public class LavaSurvivalActive {
         this.gameSpace = gameSpace;
         this.world = world;
 
-        center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig().mapLength() * 16 / 2));
+        BlockPos center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig()
+                                                                                            .mapLength() * 16 / 2));
         timeElapsed = 0;
         widgets = new LavaSurvivalWidgets(this);
-        alivePlayers = new ArrayList<ServerPlayerEntity>();
-        playerScores = new HashMap<UUID, Integer>();
+        alivePlayers = new ArrayList<>();
+        playerScores = new HashMap<>();
 
         widgets = new LavaSurvivalWidgets(this);
 
@@ -112,22 +116,22 @@ public class LavaSurvivalActive {
             if (alivePlayers.isEmpty() && timeUntilEnd == -1) {
                 // End game
                 var players = gameSpace.getPlayers();
-                players.sendMessage(Text.literal(""));
+                players.sendMessage(Text.empty());
                 players.sendMessage(Text.translatable("message.lavasurvival.lose").formatted(Formatting.RED, Formatting.BOLD));
-                players.sendMessage(Text.literal(""));
+                players.sendMessage(Text.empty());
                 timeUntilEnd = 5;
             }
             // End the game if the time limit has been exceeded: win!
             if (timeElapsed >= config.timeLimit() && timeUntilEnd == -1) {
                 var players = gameSpace.getPlayers();
-                players.sendMessage(Text.literal(""));
+                players.sendMessage(Text.empty());
                 players.sendMessage(Text.translatable("message.lavasurvival.win").formatted(Formatting.GOLD, Formatting.BOLD));
-                var winners = Text.literal("");
+                var winners = Text.empty();
                 for (ServerPlayerEntity alivePlayer : alivePlayers) {
                     winners.append(alivePlayer.getDisplayName()).append(" ");
                 }
                 players.sendMessage(winners);
-                players.sendMessage(Text.literal(""));
+                players.sendMessage(Text.empty());
                 timeUntilEnd = 5;
             }
             // Increase scores with time and update timer and sidebar
@@ -159,7 +163,7 @@ public class LavaSurvivalActive {
         } else {
             gameSpace.getPlayers().sendMessage(prefix.append(Text.translatable("death.lavasurvival.other", player.getName()).formatted(Formatting.RED)));
         }
-        player.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, 0.7f, LavaSurvivalUtil.randomFloat(0.7f, 1.0f));
+        gameSpace.getPlayers().playSound(SoundEvents.ITEM_TRIDENT_THUNDER.value(), SoundCategory.PLAYERS, 0.7f, 0.8f);
         player.changeGameMode(GameMode.SPECTATOR);
         return EventResult.DENY;
     }
@@ -186,12 +190,8 @@ public class LavaSurvivalActive {
     private void onPlayerRemove(ServerPlayerEntity player) {
         alivePlayers.remove(player);
         playerScores.remove(player.getUuid());
-
         widgets.removePlayer(player);
-
         widgets.updateWidgets(playerScores);
-
-        //player.networkHandler.sendPacket(new ResourcePackRemoveS2CPacket(Optional.ofNullable(player.getUuid())));
     }
 
     private EventResult onPlayerAttack(ServerPlayerEntity attacker, Hand hand, Entity entity, EntityHitResult entityHitResult) {
@@ -203,7 +203,7 @@ public class LavaSurvivalActive {
     }
 
     private EventResult onPlayerDamage(ServerPlayerEntity player, DamageSource damageSource, float v) {
-        if (damageSource.getType() == world.getDamageSources().explosion(damageSource.getSource(), damageSource.getAttacker()).getType()) {
+        if (damageSource.getTypeRegistryEntry() == DamageTypes.PLAYER_EXPLOSION) {
             return EventResult.DENY;
         }
         return EventResult.ALLOW;

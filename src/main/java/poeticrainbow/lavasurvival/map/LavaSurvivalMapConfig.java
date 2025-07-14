@@ -43,6 +43,10 @@ public record LavaSurvivalMapConfig(
         return registryHolder.dimensions().get(this.dimensionOptions);
     }
 
+    public DimensionOptions getDimensionOptionsFromWorldPreset() {
+        return ((DimensionHolder) this.worldPreset.value()).lava_survival$getDimension(dimensionOptions).get();
+    }
+
     public RegistryEntry<DimensionType> getDimensionTypeFromWorldPreset() {
         return ((DimensionHolder) this.worldPreset.value()).lava_survival$getDimension(dimensionOptions).get().dimensionTypeEntry();
     }
@@ -52,7 +56,7 @@ public record LavaSurvivalMapConfig(
     }
 
     public ChunkGenerator getChunkGenerator() {
-        DimensionOptions dimensionOptions = getDimensionOptions();
+        DimensionOptions dimensionOptions = getDimensionOptionsFromWorldPreset();
 
         if (excludedBiomes().isPresent()) {
             if (dimensionOptions.chunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator) {
@@ -73,7 +77,8 @@ public record LavaSurvivalMapConfig(
 
             throw new IllegalArgumentException("Cannot exclude biomes from unsupported chunk generator");
         }
-        return getDimensionOptions().chunkGenerator();
+
+        return dimensionOptions.chunkGenerator();
     }
 
     public DIMENSION_TYPE getDimensionType() {

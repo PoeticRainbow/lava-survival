@@ -3,7 +3,6 @@ package poeticrainbow.lavasurvival;
 import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import eu.pb4.polymer.rsm.api.RegistrySyncUtils;
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -22,7 +21,7 @@ import poeticrainbow.lavasurvival.block.InfiniteLavaBlockEntity;
 import poeticrainbow.lavasurvival.block.InfiniteLavaBlockStill;
 import poeticrainbow.lavasurvival.game.LavaSurvivalConfig;
 import poeticrainbow.lavasurvival.game.phases.LavaSurvivalWaitingPhase;
-import poeticrainbow.lavasurvival.item.BlockMenuItem;
+import poeticrainbow.lavasurvival.ui.BlockMenuItem;
 import xyz.nucleoid.plasmid.api.game.GameType;
 
 public class LavaSurvival implements ModInitializer {
@@ -52,7 +51,7 @@ public class LavaSurvival implements ModInitializer {
 	public static final BlockEntityType<InfiniteLavaBlockEntity> INFINITE_LAVA_BLOCK_ENTITY = Registry.register(
 			Registries.BLOCK_ENTITY_TYPE,
 			id("infinite_lava_entity"),
-			FabricBlockEntityTypeBuilder.create(InfiniteLavaBlockEntity::new, LavaSurvival.INFINITE_LAVA).build(null)
+			FabricBlockEntityTypeBuilder.create(InfiniteLavaBlockEntity::new, LavaSurvival.INFINITE_LAVA).build()
 	);
 
 	public static final GameType<LavaSurvivalConfig> LAVASURVIVAL = GameType.register(

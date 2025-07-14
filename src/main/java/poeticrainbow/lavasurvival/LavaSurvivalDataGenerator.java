@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
@@ -26,11 +27,10 @@ public class LavaSurvivalDataGenerator implements DataGeneratorEntrypoint {
 
 		@Override
 		protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-			getOrCreateTagBuilder(ONE_POINT_BLOCKS)
-					.add(Blocks.GRAVEL)
-					.addOptionalTag(BlockTags.DIRT)
-					.addOptionalTag(BlockTags.SAND);
-
+			getTagBuilder(ONE_POINT_BLOCKS)
+					.add(Registries.BLOCK.getId(Blocks.GRAVEL))
+					.addOptionalTag(BlockTags.DIRT.id())
+					.addOptionalTag(BlockTags.SAND.id());
 		}
 	}
 

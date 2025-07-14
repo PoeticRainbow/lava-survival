@@ -18,7 +18,6 @@ public class BurningBlock extends Block implements PolymerBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         world.setBlockState(pos, LavaSurvival.INFINITE_LAVA.getDefaultState());
-        super.randomTick(state, world, pos, random);
     }
 
     @Override

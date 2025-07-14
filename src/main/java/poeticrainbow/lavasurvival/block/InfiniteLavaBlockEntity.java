@@ -56,6 +56,7 @@ public class InfiniteLavaBlockEntity extends BlockEntity {
     public static void tick(World world, BlockPos pos, BlockState state, InfiniteLavaBlockEntity be) {
         if (world instanceof ServerWorld serverWorld) {
             var gameSpaceManager = GameSpaceManager.get().byWorld(world);
+            if (gameSpaceManager == null) return;
             var time = gameSpaceManager.getTime();
 
 

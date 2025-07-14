@@ -1,4 +1,4 @@
-package poeticrainbow.lavasurvival.item;
+package poeticrainbow.lavasurvival.ui;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +13,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import poeticrainbow.lavasurvival.ui.BlockGui;
 import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
 import xyz.nucleoid.packettweaker.PacketContext;
 import xyz.nucleoid.plasmid.api.game.GameSpaceManager;
@@ -38,13 +37,13 @@ public class BlockMenuItem extends Item implements PolymerItem {
         if (user instanceof ServerPlayerEntity player) {
             var gamespace = GameSpaceManager.get().byWorld(world);
             if (gamespace == null) {
-                user.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_NO, SoundCategory.MASTER, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
+                user.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_NO, SoundCategory.UI, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
                 return ActionResult.SUCCESS;
             }
 
             var blockMenu = new BlockGui(player);
             blockMenu.open();
-            user.playSoundToPlayer(SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.MASTER, 0.7f, LavaSurvivalUtil.randomFloat(1.0f, 1.4f));
+            user.playSoundToPlayer(SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.UI, 0.7f, 1f);
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;

@@ -25,6 +25,6 @@ public abstract class WorldPresetMixin implements DimensionHolder {
     @Unique
     @Override
     public Optional<DimensionOptions> lava_survival$getDimension(RegistryKey<DimensionOptions> dimension) {
-        return Optional.ofNullable((DimensionOptions) this.dimensions.get(dimension));
+        return Optional.ofNullable(this.dimensions.get(dimension));
     }
 }

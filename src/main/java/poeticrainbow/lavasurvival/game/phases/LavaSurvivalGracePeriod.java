@@ -39,7 +39,6 @@ public class LavaSurvivalGracePeriod {
     private final LavaSurvivalConfig config;
     private final GameSpace gameSpace;
     private final ServerWorld world;
-    private static BlockPos center;
     private static int gracePeriod;
     private static int timeElapsed;
     private static ArrayList<ServerPlayerEntity> alivePlayers;
@@ -50,10 +49,11 @@ public class LavaSurvivalGracePeriod {
         this.gameSpace = gameSpace;
         this.world = world;
 
-        center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig().mapLength() * 16 / 2));
+        BlockPos center = new BlockPos((config.mapConfig().mapWidth() * 16 / 2), 64, (config.mapConfig()
+                                                                                            .mapLength() * 16 / 2));
         gracePeriod = config.gracePeriod();
         timeElapsed = 0;
-        alivePlayers = new ArrayList<ServerPlayerEntity>();
+        alivePlayers = new ArrayList<>();
 
         this.bossbar = new BossBarWidget(Text.translatable("bossbar.lavasurvival.grace_period", config.gracePeriod()));
         this.bossbar.setStyle(BossBar.Color.RED, BossBar.Style.PROGRESS);

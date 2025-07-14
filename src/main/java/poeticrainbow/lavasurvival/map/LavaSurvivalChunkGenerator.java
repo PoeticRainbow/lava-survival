@@ -9,11 +9,9 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.Blender;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.chunk.*;
 import net.minecraft.world.gen.noise.NoiseConfig;
+import poeticrainbow.lavasurvival.LavaSurvival;
 import xyz.nucleoid.fantasy.util.ChunkGeneratorSettingsProvider;
 import xyz.nucleoid.plasmid.api.game.world.generator.GameChunkGenerator;
 
@@ -29,6 +27,10 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
         super(config.getChunkGenerator().getBiomeSource());
         this.config = config;
         this.chunkGenerator = config.getChunkGenerator();
+
+        if (chunkGenerator instanceof FlatChunkGenerator flatGenerator) {
+            flatGenerator.getConfig().getLayerBlocks().forEach((layer) -> LavaSurvival.LOGGER.info("Layer: {}", layer));
+        }
     }
 
     // Returns true if the chunk is in the playable region
@@ -70,6 +72,7 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
                 for (int z = startZ; z < startZ + 16; z++) {
                     // Ensure there is no water worlds... scuffed
                     var preSurfaceBlock = Blocks.STONE.getDefaultState();
+
                     LavaSurvivalMapConfig.DIMENSION_TYPE dimensionType = config.getDimensionType();
 
                     if (dimensionType == LavaSurvivalMapConfig.DIMENSION_TYPE.THE_NETHER) {
@@ -83,8 +86,14 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
                         preSurfaceBlock = Blocks.END_STONE.getDefaultState();
                     }
 
-                    region.setBlockState(new BlockPos(x, 61, z), preSurfaceBlock, 3);
-                    region.setBlockState(new BlockPos(x, 62, z), preSurfaceBlock, 3);
+
+                    if (chunkGenerator instanceof FlatChunkGenerator) {
+                        region.setBlockState(new BlockPos(x, 61, z), Blocks.DIRT.getDefaultState(), 3);
+                        region.setBlockState(new BlockPos(x, 62, z), Blocks.GRASS_BLOCK.getDefaultState(), 3);
+                    } else {
+                        region.setBlockState(new BlockPos(x, 61, z), preSurfaceBlock, 3);
+                        region.setBlockState(new BlockPos(x, 62, z), preSurfaceBlock, 3);
+                    }
                 }
             }
 
@@ -167,7 +176,7 @@ public class LavaSurvivalChunkGenerator extends GameChunkGenerator implements Ch
 
             for (int x = startX; x < startX + 16; x++) {
                 for (int z = startZ; z < startZ + 16; z++) {
-                    chunk.setBlockState(new BlockPos(x, 319, z), Blocks.BARRIER.getDefaultState(), false);
+                    chunk.setBlockState(new BlockPos(x, 319, z), Blocks.BARRIER.getDefaultState(), 0);
                 }
             }
         }
