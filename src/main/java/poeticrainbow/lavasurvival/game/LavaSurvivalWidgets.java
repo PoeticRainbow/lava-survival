@@ -11,7 +11,6 @@ import xyz.nucleoid.plasmid.api.game.common.widget.BossBarWidget;
 import xyz.nucleoid.plasmid.api.game.common.widget.SidebarWidget;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class LavaSurvivalWidgets {

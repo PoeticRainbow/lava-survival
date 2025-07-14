@@ -3,7 +3,6 @@ package poeticrainbow.lavasurvival.ui;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.Item;
@@ -17,9 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import poeticrainbow.lavasurvival.util.LavaSurvivalUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BlockGui extends SimpleGui {
